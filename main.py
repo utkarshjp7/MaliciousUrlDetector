@@ -1,3 +1,8 @@
+'''
+Utkarsh Patel & Mayank Jain
+CIS 475 Final Project
+'''
+
 import csv
 import feature_extractor
 import trainer as tr
@@ -30,16 +35,17 @@ def generate_test_features(test_data_file, test_feature_file):
     write_header = True
     with open(test_data_file) as f:
         for line in f:
-            url = line.strip()
+            url = line.split(',')[0].strip()
             if url:            
                 urlFeature = feature_extractor.extract(url)
                 write_feature(urlFeature, test_feature_file, write_header)
                 write_feature = False
 
+
 def main():
-    generate_train_features('train_data.csv','train_data_features.csv')
-    generate_test_features("test_data.txt",'test_data_features.csv')
-    tr.train('train_data_features.csv', 'test_data_features.csv')     
+    generate_train_features('train_data.csv','train_features.csv')
+    generate_test_features("test_data.txt",'test_features.csv')
+    tr.train('train_features.csv', 'test_features.csv')     
 
 if __name__ == "__main__":
     main()

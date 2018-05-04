@@ -1,3 +1,8 @@
+'''
+Utkarsh Patel & Mayank Jain
+CIS 475 Final Project
+'''
+
 from urlparse import urlparse
 import re
 import urllib2
@@ -27,7 +32,6 @@ def get_stats(url):
             return [float(sum_len)/no_ele,no_ele,largest]
         except:
             return [0, no_ele, largest]
-
 
 def find_ele_with_attribute(dom,ele,attribute):
     for subelement in dom.getElementsByTagName(ele):
@@ -70,10 +74,10 @@ def is_ipAddress(host):
 def getASN(host):
     try:
         g = pygeoip.GeoIP('GeoIPASNum.dat')
-        asn=int(g.org_by_name(host).split()[0][2:])
+        asn = int(g.org_by_name(host).split()[0][2:])
         return asn
     except:
-        return  nf
+        return nf
 
 def safebrowsing(url):
     api_key = "ABQIAAAA8C6Tfr7tocAe04vXo5uYqRTEYoRzLFR0-nQ3fRl5qJUqcubbrw"
@@ -109,33 +113,26 @@ def safebrowsing(url):
         return -1
 
 def extract(url_input):
-
     feature = {}
-    tokens_words = re.split('\W+', url_input)       #Extract stings delimited by (.,/,?,,=,-,_)
+    tokens_words = re.split('\W+', url_input)   
     
     obj = urlparse(url_input)
     host = obj.netloc
     path = obj.path
 
-    feature['URL']=url_input
-
+    feature['URL'] = url_input
     feature['rank_host'], feature['rank_country'] = sitepopularity(host)
-
-    feature['host']=obj.netloc
-    feature['path']=obj.path
-
-    feature['Length_of_url']=len(url_input)
-    feature['Length_of_host']=len(host)
-    feature['No_of_dots']=url_input.count('.')
-
+    feature['host'] = obj.netloc
+    feature['path'] = obj.path
+    feature['Length_of_url'] = len(url_input)
+    feature['Length_of_host'] = len(host)
+    feature['No_of_dots'] = url_input.count('.')
+    feature['sec_sen_word_cnt'] = count_sensitive_words(tokens_words)
+    feature['IPaddress_presence'] = is_ipAddress(tokens_words)
+    feature['ASNno'] = getASN(host)
+    feature['safebrowsing'] = safebrowsing(url_input)
     feature['avg_token_length'], feature['token_count'], feature['largest_token'] = get_stats(url_input)
     feature['avg_domain_token_length'], feature['domain_token_count'], feature['largest_domain'] = get_stats(host)
     feature['avg_path_token'], feature['path_token_count'], feature['largest_path'] = get_stats(path)
-
-    feature['sec_sen_word_cnt'] = count_sensitive_words(tokens_words)
-    feature['IPaddress_presence'] = is_ipAddress(tokens_words)
-    
-    feature['ASNno']=getASN(host)
-    feature['safebrowsing']=safebrowsing(url_input)
 
     return feature
